@@ -1,22 +1,25 @@
 #!/bin/bash
 source ./env.txt
 set -e
-repos=$(bb list -u $BB_USERNAME -p $BB_PASSWORD --private | grep $BB_ORG | cut -d' ' -f3 | cut -d'/' -f2)
+# Nombre de los repos separados por espacios
+repos=()
 
-for repo in $repos; do
+for repo in "${repos[@]}"; do
   echo
   echo "* Processing $repo..."
   echo
-#   git clone --bare git@bitbucket.org:$BB_ORG/$repo.git 
-#   cd $repo.git
-#   echo
-#   echo "* $repo cloned, now creating on github..."  
-#   echo
-#   curl -u $GH_USERNAME:$GH_PASSWORD https://api.github.com/orgs/$GH_ORG/repos -d "{\"name\": \"$repo\", \"private\": true}"
-#   echo
-#   echo "* mirroring $repo to github..."  
-#   echo
-#   git push --mirror git@github.com:$GH_ORG/$repo.git && \
-#     bb delete -u $BB_USERNAME -p $BB_PASSWORD --owner $BB_ORG $repo    
-#   cd ..  
+  $sshbitbucket
+  echo
+  echo "* authentication with bitbucket..."
+  echo
+  git clone --bare git@bitbucket.org:$INSTITUTION_NAME/$repo.git 
+  cd $repo.git
+  echo
+  echo "* $repo cloned"  
+  echo
+  echo "* mirroring $repo to bitbucket..."  
+  echo
+  git push --mirror git@bitbucket.org:$INSTITUTION_NAME_MIRROR/$repo.git   
+  cd ..
+  sleep 300  
 done
